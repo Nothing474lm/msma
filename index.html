@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UX/UI FUNDAMENTAL (Completo)</title>
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- React y Babel -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* Estilos para animaciones personalizadas */
+    .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+    .fade-out { animation: fadeOut 0.3s ease-in forwards; }
+    .scale-in { animation: scaleIn 0.3s ease-out forwards; }
+    .scale-out { animation: scaleOut 0.3s ease-in forwards; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes scaleOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+  </style>
+</head>
+<body class="bg-white">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const UxUiFundamentals = () => {
+      const [currentTopic, setCurrentTopic] = React.useState(0);
+      const [isAnimating, setIsAnimating] = React.useState(false);
+      const [activeDemo, setActiveDemo] = React.useState('responsive-grids');
+      const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+      const [practiceTopic, setPracticeTopic] = React.useState(null);
+
+      const topics = [
+        {
+          id: 'responsive-grids',
+          number: '01',
+          title: "Grids Responsivos",
+          subtitle: "Organizando contenido para cualquier pantalla",
+          icon: "layout-grid",
+          description: "Los grids son la base para crear layouts ordenados que se adaptan fluidamente a diferentes tamaños de pantalla, desde móviles hasta computadoras de escritorio.",
+          longDescription: "Un sistema de grid responsivo utiliza columnas, medianiles (gutters) y márgenes para alinear el contenido de manera consistente. Esto no solo mejora la estética, sino que también crea una jerarquía visual clara y una experiencia de usuario predecible en todos los dispositivos.",
+          applications: ["Diseño de layouts para sitios web y aplicaciones", "Alineación consistente de elementos de interfaz", "Creación de jerarquía visual y orden", "Adaptación de contenido para móviles, tablets y desktops", "Fundamento para sistemas de diseño"],
+          examples: ["Galerías de imágenes que cambian de 3 a 1 columna", "Layouts de noticias como The New York Times o BBC", "Páginas de producto en sitios de e-commerce"],
+          practice: {
+            deepDive: "Más allá de las columnas simétricas, explora los 'compound grids' (rejillas compuestas) donde anidas grids para estructuras complejas. Con CSS Grid, puedes crear layouts asimétricos y controlar el flujo en dos dimensiones (filas y columnas), usando funciones como `minmax()` para una flexibilidad sin precedentes.",
+            exercise: "Analiza el siguiente layout de una tarjeta de producto. Identifica los elementos clave y decide si están correctamente alineados a una rejilla de 4 columnas.",
+            task: function Exercise() {
+              const [items, setItems] = React.useState([
+                { id: 1, text: 'Imagen del producto', checked: false },
+                { id: 2, text: 'Título del producto', checked: false },
+                { id: 3, text: 'Precio y valoración', checked: false },
+                { id: 4, text: 'Botón "Añadir al carrito"', checked: false },
+              ]);
+              const toggleCheck = (id) => setItems(items.map(item => item.id === id ? {...item, checked: !item.checked} : item));
+              return (
+                <div>
+                  <div className="bg-gray-200 p-4 rounded-lg flex gap-4 mb-4">
+                    <div className="w-1/3 bg-gray-400 rounded h-24"></div>
+                    <div className="w-2/3">
+                      <div className="h-5 bg-gray-400 rounded w-full mb-2"></div>
+                      <div className="h-4 bg-gray-400 rounded w-3/4 mb-4"></div>
+                      <div className="h-8 bg-gray-500 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                  <ul className="space-y-2">
+                    {items.map(item => (
+                      <li key={item.id} onClick={() => toggleCheck(item.id)} className="flex items-center cursor-pointer p-2 rounded-md hover:bg-gray-100">
+                        <div className={`w-5 h-5 rounded border-2 ${item.checked ? 'bg-black border-black' : 'border-gray-300'} flex items-center justify-center mr-3`}>
+                          {item.checked && <i data-lucide="check" className="w-4 h-4 text-white"></i>}
+                        </div>
+                        <span>{item.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            }
+          }
+        },
+        {
+          id: 'mobile-first',
+          number: '02',
+          title: "Diseño Mobile-First",
+          subtitle: "Priorizando la experiencia en dispositivos móviles",
+          icon: "smartphone",
+          description: "Es una estrategia de diseño que comienza por la pantalla más pequeña (móvil) y luego se expande a dispositivos más grandes, asegurando que el contenido esencial siempre sea lo primero.",
+          longDescription: "El enfoque Mobile-First obliga a los diseñadores a centrarse en el contenido y las funcionalidades más importantes. Esto resulta en interfaces más limpias y rápidas, que se enriquecen progresivamente para pantallas más grandes (progressive enhancement). No se trata de tener menos, sino de tener lo correcto en el contexto adecuado.",
+          applications: ["Diseño de aplicaciones web progresivas (PWA)", "Optimización de la experiencia de usuario móvil", "Mejora de la velocidad de carga y el SEO", "Creación de interfaces enfocadas y sin desorden", "Desarrollo de productos con recursos limitados"],
+          examples: ["Instagram, que prioriza la funcionalidad móvil", "Sitios de reserva de vuelos con flujos simplificados", "Aplicaciones de noticias que muestran titulares primero"],
+          practice: {
+            deepDive: "El verdadero poder del Mobile-First no es solo el layout, es la arquitectura de la información. ¿Qué acción es la principal en cada pantalla? ¿Qué datos son cruciales? Al responder esto para móvil, el diseño para desktop se vuelve más una cuestión de 'cómo mostrar más' en lugar de 'qué quitar', lo que lleva a mejores productos.",
+            exercise: "Imagina que estás diseñando una app del clima. Prioriza las siguientes 5 piezas de información para una vista móvil. ¿Cuál es la más importante? ¿Cuál podría ocultarse tras un toque?",
+            task: function Exercise() {
+              const items = ['Temperatura actual', 'Pronóstico de 24 horas', 'Radar animado', 'Calidad del aire', 'Alertas meteorológicas'];
+              return <p className="text-sm text-gray-600 bg-gray-100 p-4 rounded-lg"><i>Ejercicio de reflexión:</i> Ordena esta lista en un papel o en tu mente: <strong>{items.join(', ')}</strong>. No hay una única respuesta correcta, pero tu razonamiento es la clave del Mobile-First.</p>;
+            }
+          }
+        },
+        {
+          id: 'iconography',
+          number: '03',
+          title: "Iconografía Web",
+          subtitle: "Comunicación visual a través de símbolos",
+          icon: "sparkles",
+          description: "Los iconos son un lenguaje visual universal que ayuda a los usuarios a navegar y comprender una interfaz de manera rápida e intuitiva, superando las barreras del idioma.",
+          longDescription: "Una buena iconografía es consistente, clara y reconocible. Los iconos deben diseñarse como un conjunto coherente y ser probados para asegurar que su significado sea universal. El uso de formatos vectoriales (SVG) es crucial para la nitidez en cualquier pantalla.",
+          applications: ["Navegación principal y barras de herramientas", "Botones de acción (ej. 'guardar', 'eliminar')", "Ilustración de características o servicios", "Indicadores de estado (ej. 'éxito', 'error')", "Listas y puntos de interés visual"],
+          examples: ["Los iconos de Material Design de Google", "La librería de iconos Font Awesome o Lucide", "Los símbolos universales de 'casa', 'perfil' o 'carrito'"],
+          practice: {
+            deepDive: "La efectividad de un icono reside en su 'affordance' (la cualidad que sugiere cómo usarlo) y su contexto cultural. Un buen set mantiene un peso visual y un nivel de detalle consistentes. Evita mezclar estilos (ej. outlined con filled) a menos que sea para indicar un estado (activo/inactivo), una técnica de diseño muy poderosa.",
+            exercise: "A continuación se muestran 3 funciones comunes. ¿Usarías un icono con relleno (filled) o solo de contorno (outlined) para indicar que la función está 'activa' o 'seleccionada'?",
+            task: function Exercise() {
+              const [toggles, setToggles] = React.useState({ fav: false, bell: false, bookmark: false });
+              const toggle = (key) => setToggles(prev => ({...prev, [key]: !prev[key]}));
+              return (
+                <div className="flex justify-around items-center p-4">
+                  {[{key: 'fav', icon: 'heart'}, {key: 'bell', icon: 'bell'}, {key: 'bookmark', icon: 'bookmark'}].map(({key, icon}) => (
+                    <div key={key} onClick={() => toggle(key)} className="cursor-pointer text-center">
+                      <i data-lucide={icon} className={`w-10 h-10 mx-auto transition-all ${toggles[key] ? 'fill-current text-red-500' : ''}`}></i>
+                      <p className="text-xs mt-2">{toggles[key] ? 'Activo (Relleno)' : 'Inactivo (Contorno)'}</p>
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+          }
+        },
+        {
+          id: 'prototyping',
+          number: '04',
+          title: "Prototipado Básico",
+          subtitle: "Validando ideas antes de escribir código",
+          icon: "mouse-pointer-click",
+          description: "Un prototipo es una simulación interactiva de un producto final que permite probar flujos de usuario, validar conceptos y recoger feedback antes de la fase de desarrollo.",
+          longDescription: "Los prototipos varían en fidelidad, desde bocetos en papel (baja fidelidad) hasta maquetas interactivas casi idénticas al producto final (alta fidelidad). Son una herramienta esencial para iterar rápidamente, reducir costos y minimizar riesgos de negocio.",
+          applications: ["Pruebas de usabilidad con usuarios reales", "Presentación de conceptos a stakeholders", "Definición de flujos de navegación", "Validación de la arquitectura de la información", "Exploración de soluciones de diseño"],
+          examples: ["Un flujo de compra simulado en Figma", "Una maqueta de una app hecha con Adobe XD", "Prototipos en papel para probar un nuevo formulario"],
+          practice: {
+            deepDive: "La clave de un buen prototipo no es su belleza, sino la pregunta que busca responder. ¿Es para validar el flujo (baja fidelidad)? ¿O para probar microinteracciones (alta fidelidad)? Enfocar el prototipo en una hipótesis específica (ej. 'los usuarios entenderán este icono') lo hace inmensamente más valioso.",
+            exercise: "Estás diseñando un proceso de inicio de sesión. ¿Qué nivel de fidelidad de prototipo usarías para las siguientes pruebas?",
+            task: function Exercise() {
+              return (
+                <ul className="space-y-3 text-sm">
+                  <li><strong>Prueba A:</strong> ¿El flujo 'login' -> 'home' es lógico? <span className="font-semibold text-blue-600 ml-2">Respuesta: Baja fidelidad (cajas y flechas son suficientes).</span></li>
+                  <li><strong>Prueba B:</strong> ¿La animación del botón de 'login' es satisfactoria? <span className="font-semibold text-blue-600 ml-2">Respuesta: Alta fidelidad (se necesita una herramienta como Figma o Protopie).</span></li>
+                </ul>
+              );
+            }
+          }
+        },
+        {
+          id: 'tools',
+          number: '05',
+          title: "Herramientas del Oficio",
+          subtitle: "Los instrumentos para dar vida a tus diseños",
+          icon: "pencil-ruler",
+          description: "Herramientas como Figma y Adobe XD son el estándar de la industria para el diseño de interfaces, prototipado y colaboración en equipo.",
+          longDescription: "Figma se ha popularizado por su enfoque colaborativo y basado en la nube, permitiendo que múltiples diseñadores trabajen en el mismo archivo en tiempo real. Adobe XD se integra perfectamente con el ecosistema de Adobe. Ambas son herramientas poderosas para todo el proceso de diseño UX/UI.",
+          applications: ["Diseño de interfaces (UI Design)", "Creación de prototipos interactivos", "Desarrollo de sistemas de diseño", "Colaboración en tiempo real con equipos", "Handoff para desarrolladores"],
+          examples: ["Figma para proyectos colaborativos remotos", "Adobe XD para diseñadores que usan Photoshop e Illustrator", "Sketch (alternativa popular en macOS)"],
+          practice: {
+            deepDive: "La elección de la herramienta a menudo depende del equipo y del ecosistema. Figma brilla en la colaboración y los sistemas de diseño complejos. Adobe XD tiene una ventaja en la integración con otras herramientas de Adobe como Photoshop. La habilidad clave no es dominar una herramienta, sino entender los principios que se aplican en cualquiera de ellas.",
+            exercise: "¿Qué herramienta elegirías para los siguientes escenarios? No hay una respuesta única, pero justifica tu elección.",
+            task: function Exercise() {
+              return (
+                <ul className="space-y-3 text-sm">
+                  <li><strong>Escenario A:</strong> Un equipo de 15 diseñadores y desarrolladores repartidos por el mundo necesita crear un sistema de diseño. <span className="font-semibold text-blue-600 ml-2">Sugerencia: Figma, por su fuerte enfoque en la colaboración en tiempo real.</span></li>
+                  <li><strong>Escenario B:</strong> Un diseñador freelance necesita crear un prototipo rápido que usa muchos recursos gráficos de Adobe Illustrator. <span className="font-semibold text-blue-600 ml-2">Sugerencia: Adobe XD, por su integración nativa con el ecosistema de Adobe.</span></li>
+                </ul>
+              );
+            }
+          }
+        },
+        {
+          id: 'usability',
+          number: '06',
+          title: "Principios de Usabilidad",
+          subtitle: "Creando productos fáciles y agradables de usar",
+          icon: "user-check",
+          description: "La usabilidad mide qué tan fácil es para un usuario alcanzar sus metas al interactuar con un producto. Se basa en principios como la eficiencia, la efectividad y la satisfacción.",
+          longDescription: "Los principios de usabilidad, como los 10 heurísticos de Jakob Nielsen, proporcionan una guía para crear interfaces intuitivas. Estos incluyen dar feedback al usuario, ofrecer consistencia, prevenir errores y diseñar con una estética minimalista, asegurando una experiencia sin fricciones.",
+          applications: ["Evaluación de la facilidad de uso de un sitio web", "Diseño de flujos de onboarding para nuevos usuarios", "Optimización de formularios y procesos de checkout", "Reducción de la carga cognitiva del usuario", "Aumento de la retención y satisfacción del cliente"],
+          examples: ["Un mensaje de 'Contraseña guardada' (feedback)", "El botón 'Deshacer' en Gmail (prevención de errores)", "Menús de navegación consistentes en todo un sitio"],
+          practice: {
+            deepDive: "La usabilidad no es subjetiva; se puede medir. Métricas como la tasa de éxito de tareas, el tiempo en la tarea y la escala de usabilidad del sistema (SUS) permiten cuantificar la experiencia. Las pruebas de usabilidad regulares, incluso con 5 usuarios, revelan la mayoría de los problemas críticos.",
+            exercise: "El siguiente formulario de registro tiene al menos 3 problemas de usabilidad basados en las heurísticas de Nielsen. ¿Puedes identificarlos?",
+            task: function Exercise() {
+              return (
+                <div>
+                  <div className="border border-red-300 bg-red-50 p-4 rounded-lg">
+                    <h4 className="font-bold text-center mb-4">Registro</h4>
+                    <input type="text" placeholder="nombre" className="w-full border p-1 mb-2 rounded" />
+                    <input type="text" placeholder="email" className="w-full border p-1 mb-2 rounded" />
+                    <input type="text" placeholder="contraseña" className="w-full border p-1 mb-2 rounded" />
+                    <button className="w-full bg-gray-300 p-1 rounded">Ok</button>
+                  </div>
+                   <ul className="mt-4 space-y-2 text-sm">
+                    <li><strong className="text-red-600">1. Poca visibilidad del estado del sistema:</strong> No hay feedback de errores o éxito.</li>
+                    <li><strong className="text-red-600">2. Mal mapeo entre sistema y mundo real:</strong> Etiquetas en minúscula, botón "Ok" ambiguo.</li>
+                    <li><strong className="text-red-600">3. Prevención de errores:</strong> No se muestra la contraseña, no hay confirmación.</li>
+                  </ul>
+                </div>
+              );
+            }
+          }
+        }
+      ];
+
+      const openPracticeModal = (topicId) => {
+        const topicData = topics.find(t => t.id === topicId);
+        setPracticeTopic(topicData);
+      };
+
+      const closePracticeModal = () => {
+        setPracticeTopic(null);
+      };
+
+      const nextTopic = () => {
+        setIsAnimating(true);
+        setTimeout(() => {
+          setCurrentTopic((prev) => (prev + 1) % topics.length);
+          setIsAnimating(false);
+        }, 300);
+      };
+
+      const prevTopic = () => {
+        setIsAnimating(true);
+        setTimeout(() => {
+          setCurrentTopic((prev) => (prev - 1 + topics.length) % topics.length);
+          setIsAnimating(false);
+        }, 300);
+      };
+
+      const jumpToTopic = (index) => {
+        if (index !== currentTopic) {
+          setIsAnimating(true);
+          setTimeout(() => {
+            setCurrentTopic(index);
+            setIsAnimating(false);
+          }, 300);
+        }
+      };
+      
+      // --- Demos ---
+      const ResponsiveGridDemo = () => {
+        const [columns, setColumns] = React.useState(3);
+        const colClasses = { 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3' };
+        return (
+          <div className="w-full h-64 flex flex-col items-center justify-center bg-gray-50 p-4">
+            <div className={`w-full grid ${colClasses[columns]} gap-4 transition-all duration-300 mb-4`}>
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-black/10 rounded-lg h-20 flex items-center justify-center text-gray-500">
+                  <i data-lucide="image" className="w-8 h-8"></i>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+                <button onClick={() => setColumns(1)} className={`p-2 rounded-md ${columns === 1 ? 'bg-black text-white' : 'hover:bg-gray-200'}`}><i data-lucide="smartphone" className="w-5 h-5"></i></button>
+                <button onClick={() => setColumns(2)} className={`p-2 rounded-md ${columns === 2 ? 'bg-black text-white' : 'hover:bg-gray-200'}`}><i data-lucide="tablet" className="w-5 h-5"></i></button>
+                <button onClick={() => setColumns(3)} className={`p-2 rounded-md ${columns === 3 ? 'bg-black text-white' : 'hover:bg-gray-200'}`}><i data-lucide="laptop" className="w-5 h-5"></i></button>
+            </div>
+          </div>
+        );
+      };
+      
+      const MobileFirstDemo = () => (
+         <div className="w-full h-64 flex items-center justify-center bg-gray-50 p-4 gap-8">
+            <div className="text-center">
+                <h4 className="font-semibold mb-2">Móvil</h4>
+                <div className="w-32 h-48 bg-white shadow-md rounded-lg p-3 flex flex-col items-center">
+                    <div className="w-full h-6 bg-black/10 rounded mb-3"></div>
+                    <div className="w-full h-4 bg-black/10 rounded mb-2"></div>
+                    <div className="w-3/4 h-4 bg-black/10 rounded"></div>
+                </div>
+            </div>
+            <div className="text-5xl text-gray-300">&rarr;</div>
+            <div className="text-center">
+                <h4 className="font-semibold mb-2">Desktop</h4>
+                <div className="w-64 h-48 bg-white shadow-md rounded-lg p-3 flex">
+                    <div className="w-1/3 pr-3 border-r border-gray-200">
+                        <div className="w-full h-4 bg-black/10 rounded mb-2"></div>
+                        <div className="w-full h-4 bg-black/10 rounded mb-2"></div>
+                        <div className="w-full h-4 bg-black/10 rounded"></div>
+                    </div>
+                    <div className="w-2/3 pl-3">
+                        <div className="w-full h-8 bg-black/10 rounded mb-3"></div>
+                        <div className="w-full h-4 bg-black/10 rounded mb-2"></div>
+                        <div className="w-3/4 h-4 bg-black/10 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      );
+
+      const IconographyDemo = () => {
+        const [stroke, setStroke] = React.useState(2);
+        const icons = ['home', 'user', 'settings', 'bell', 'search', 'message-square'];
+        return (
+            <div className="w-full h-64 flex flex-col items-center justify-center bg-gray-50 p-4">
+                <div className="grid grid-cols-6 gap-6 mb-6">
+                    {icons.map(icon => (
+                        <i key={icon} data-lucide={icon} className="w-8 h-8 text-gray-700 transition-all" style={{strokeWidth: stroke}}></i>
+                    ))}
+                </div>
+                <div>
+                    <label htmlFor="stroke-width" className="text-sm mr-2">Grosor:</label>
+                    <input type="range" id="stroke-width" min="1" max="3" step="0.25" value={stroke} onChange={(e) => setStroke(e.target.value)} />
+                </div>
+            </div>
+        );
+      };
+
+      const PrototypingDemo = () => {
+          const [screen, setScreen] = React.useState('home');
+          return (
+            <div className="w-full h-64 flex items-center justify-center bg-gray-50 p-4">
+                <div className="w-72 h-56 bg-white shadow-lg rounded-lg p-4 flex flex-col justify-between">
+                    {screen === 'home' && (
+                        <div className="text-center">
+                            <h4 className="text-lg font-bold mb-4">Pantalla de Inicio</h4>
+                            <p className="text-sm text-gray-600 mb-8">Este es un prototipo simple. Haz clic en el botón para navegar.</p>
+                            <button onClick={() => setScreen('success')} className="px-4 py-2 bg-black text-white rounded-full text-sm">Confirmar</button>
+                        </div>
+                    )}
+                    {screen === 'success' && (
+                        <div className="text-center flex flex-col items-center justify-center flex-grow">
+                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                <i data-lucide="check" className="w-8 h-8 text-green-600"></i>
+                             </div>
+                            <h4 className="text-lg font-bold">¡Éxito!</h4>
+                            <a href="#" onClick={(e) => {e.preventDefault(); setScreen('home')}} className="text-sm text-gray-500 mt-4 hover:underline">Volver</a>
+                        </div>
+                    )}
+                </div>
+            </div>
+          );
+      };
+
+      const ToolsInfo = () => (
+        <div className="w-full h-64 flex items-center justify-center bg-gray-50 p-4 gap-10">
+            <div className="text-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg" alt="Logo de Figma" className="h-20 mx-auto mb-2"/>
+                <h4 className="text-xl font-bold">Figma</h4>
+                <p className="text-sm text-gray-600">Colaborativo y basado en la nube.</p>
+            </div>
+            <div className="text-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Adobe_XD_CC_icon.svg" alt="Logo de Adobe XD" className="h-20 mx-auto mb-2"/>
+                <h4 className="text-xl font-bold">Adobe XD</h4>
+                <p className="text-sm text-gray-600">Integrado con el ecosistema Adobe.</p>
+            </div>
+        </div>
+      );
+
+      const UsabilityDemo = () => (
+        <div className="w-full h-64 flex items-center justify-around bg-gray-50 p-4">
+            <div className="w-1/3">
+                <h4 className="font-semibold text-center mb-2 text-red-600">Mal Ejemplo</h4>
+                <div className="bg-white p-3 rounded-lg shadow-md border border-red-200">
+                    <label className="text-xs">Email</label>
+                    <input type="text" className="w-full border p-1 rounded"/>
+                    <button className="w-full bg-gray-200 text-gray-800 mt-2 p-1 rounded">Enviar</button>
+                </div>
+                <p className="text-xs text-center mt-1 text-gray-500">Sin feedback, etiquetas confusas.</p>
+            </div>
+            <div className="w-1/3">
+                <h4 className="font-semibold text-center mb-2 text-green-600">Buen Ejemplo</h4>
+                <div className="bg-white p-3 rounded-lg shadow-md border border-green-200">
+                    <label htmlFor="email-good" className="text-sm font-medium text-gray-700">Correo Electrónico</label>
+                    <input id="email-good" type="email" placeholder="tu@email.com" className="w-full border-gray-300 border p-2 rounded mt-1"/>
+                    <button className="w-full bg-black text-white mt-3 p-2 rounded-lg font-semibold">Suscribirse</button>
+                </div>
+                <p className="text-xs text-center mt-1 text-gray-500">Etiquetas claras, placeholder útil.</p>
+            </div>
+        </div>
+      );
+
+      const renderDemo = (topicId) => {
+        const demos = {
+          'responsive-grids': ResponsiveGridDemo,
+          'mobile-first': MobileFirstDemo,
+          'iconography': IconographyDemo,
+          'prototyping': PrototypingDemo,
+          'tools': ToolsInfo,
+          'usability': UsabilityDemo,
+        };
+        const DemoComponent = demos[topicId];
+        return DemoComponent ? <DemoComponent /> : null;
+      };
+      
+      const current = topics[currentTopic];
+
+      React.useEffect(() => {
+        lucide.createIcons();
+      }, [currentTopic, mobileMenuOpen, activeDemo, practiceTopic]);
+
+      return (
+        <div className="min-h-screen bg-white text-black" style={{ fontFamily: 'Inter, sans-serif' }}>
+          {practiceTopic && <PracticeModal topic={practiceTopic} onClose={closePracticeModal} />}
+
+          {/* Barra de progreso */}
+          <div className="fixed top-0 left-0 w-full h-1.5 bg-gray-100 z-50">
+            <div
+              className="h-full bg-black transition-all duration-500 ease-out"
+              style={{ width: `${((currentTopic + 1) / topics.length) * 100}%` }}
+            />
+          </div>
+
+          {/* Header */}
+          <header className="fixed w-full top-1.5 bg-white/80 backdrop-blur-lg border-b border-gray-100 z-40">
+            <nav className="max-w-7xl mx-auto px-6 py-4">
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold tracking-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  UX/UI FUNDAMENTAL
+                </h1>
+                <div className="hidden md:flex space-x-8">
+                  {['Fundamentos', 'Laboratorio', 'Práctica'].map((item) => (
+                    <a key={item} href={`#${item.toLowerCase()}`} className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
+                      {item}
+                    </a>
+                  ))}
+                </div>
+                <button className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                  <i data-lucide="menu" className="w-5 h-5"></i>
+                </button>
+              </div>
+              {mobileMenuOpen && (
+                <div className="md:hidden mt-4 space-y-2">
+                  {['Fundamentos', 'Laboratorio', 'Práctica'].map(item => (
+                    <a key={item} href={`#${item.toLowerCase()}`} className="block text-sm font-medium text-gray-600 hover:text-black transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                      {item}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </nav>
+          </header>
+
+          {/* Hero */}
+          <section className="relative pt-32 pb-20 px-6 bg-gradient-to-b from-white to-gray-50" id="inicio">
+            <div className="max-w-5xl mx-auto text-center">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
+                Domina los Fundamentos de UX/UI
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Aprende los conceptos esenciales del diseño de experiencias e interfaces. Desde grids responsivos hasta prototipado, construye una base sólida para crear productos digitales que la gente ame usar.
+              </p>
+            </div>
+          </section>
+
+          {/* Fundamentos */}
+          <section className="py-20 px-6" id="fundamentos">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex flex-col md:flex-row-reverse gap-10 lg:gap-16 items-center">
+                <div className={`md:w-1/2 transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
+                  <div className="mb-6 text-gray-400 font-mono text-sm">
+                    {current.number} / {topics.length}
+                  </div>
+                  <h3 className="text-3xl lg:text-4xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    {current.title}
+                  </h3>
+                  <h4 className="text-xl text-gray-600 mb-6">{current.subtitle}</h4>
+                  <p className="text-gray-700 mb-6 leading-relaxed">{current.longDescription}</p>
+                  
+                  <h5 className="text-lg font-semibold mb-3">Aplicaciones Comunes:</h5>
+                  <ul className="list-none text-gray-700 mb-6 space-y-2">
+                    {current.applications.map((app, i) => (
+                      <li key={i} className="flex items-start">
+                        <i data-lucide="check-circle-2" className="w-4 h-4 text-green-500 mr-3 mt-1 flex-shrink-0"></i>
+                        <span>{app}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="flex gap-4 mt-8">
+                    <button className="p-3 bg-gray-100 text-black rounded-full hover:bg-gray-200 transition-transform hover:scale-110" onClick={prevTopic}>
+                      <i data-lucide="arrow-left" className="w-5 h-5"></i>
+                    </button>
+                    <button className="p-3 bg-black text-white rounded-full hover:bg-gray-800 transition-transform hover:scale-110" onClick={nextTopic}>
+                      <i data-lucide="arrow-right" className="w-5 h-5"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="md:w-1/2 w-full">
+                  <div className="space-y-3">
+                    {topics.map((p, index) => (
+                      <button key={p.id} onClick={() => jumpToTopic(index)} className={`w-full p-4 border rounded-lg transition-all duration-300 text-left flex items-center ${ currentTopic === index ? 'bg-black text-white border-black shadow-lg scale-105' : 'bg-white text-gray-800 border-gray-200 hover:border-black hover:shadow-md'}`}>
+                        <i data-lucide={p.icon} className={`w-8 h-8 mr-5 transition-colors ${currentTopic === index ? 'text-white' : 'text-black'}`}></i>
+                        <div>
+                            <span className="font-semibold text-lg">{p.title}</span>
+                            <p className={`text-sm transition-colors ${currentTopic === index ? 'text-gray-300' : 'text-gray-500'}`}>{p.subtitle}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Laboratorio */}
+          <section className="py-20 px-6 bg-gray-50 border-t border-gray-100" id="laboratorio">
+            <div className="max-w-7xl mx-auto">
+              <h3 className="text-3xl font-bold mb-4 text-center" style={{ fontFamily: 'Playfair Display, serif' }}>
+                Laboratorio Interactivo
+              </h3>
+              <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
+                Experimenta con los conceptos de UX/UI a través de estas demostraciones simples.
+              </p>
+              <div className="mb-8 flex justify-center gap-2 md:gap-3 flex-wrap">
+                {topics.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setActiveDemo(p.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors border ${
+                      activeDemo === p.id
+                        ? 'bg-black text-white border-black'
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                    }`}
+                  >
+                    {p.title}
+                  </button>
+                ))}
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-6 max-w-4xl mx-auto overflow-hidden">
+                {renderDemo(activeDemo)}
+              </div>
+            </div>
+          </section>
+
+          {/* Práctica */}
+          <section className="py-20 px-6 bg-white border-t border-b border-gray-100" id="práctica">
+            <div className="max-w-7xl mx-auto">
+              <h3 className="text-3xl font-bold mb-6 text-center" style={{ fontFamily: 'Playfair Display, serif' }}>
+                Ejercicios Prácticos
+              </h3>
+              <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
+                Pon a prueba tus conocimientos. Identifica y aplica estos fundamentos en escenarios de diseño del mundo real.
+              </p>
+              
+              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {topics.map((p) => (
+                    <div key={p.id} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col">
+                      <div className="flex items-center mb-4">
+                        <i data-lucide={p.icon} className="w-8 h-8 mr-4 text-black"></i>
+                        <h4 className="text-xl font-semibold">{p.title}</h4>
+                      </div>
+                      <p className="text-gray-600 text-sm mb-6 flex-grow">{p.description}</p>
+                      <button onClick={() => openPracticeModal(p.id)} className="mt-auto w-full px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-all text-sm font-semibold flex items-center justify-center gap-2">
+                        <span>Iniciar Práctica</span>
+                        <i data-lucide="arrow-right" className="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer className="bg-gray-900 text-white py-12 px-6">
+            <div className="max-w-7xl mx-auto text-center">
+              <h4 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+                UX/UI FUNDAMENTAL
+              </h4>
+              <p className="text-gray-400 text-sm max-w-lg mx-auto mb-8">
+                Una plataforma educativa para construir una base sólida en el diseño de experiencias de usuario e interfaces digitales.
+              </p>
+              <div className="flex justify-center space-x-6">
+                {['github', 'dribbble', 'linkedin'].map(icon => (
+                  <a key={icon} href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide={icon} className="w-5 h-5"></i>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </footer>
+        </div>
+      );
+    };
+    
+    const PracticeModal = ({ topic, onClose }) => {
+        const [closing, setClosing] = React.useState(false);
+
+        const handleClose = () => {
+            setClosing(true);
+            setTimeout(onClose, 300); // Duración de la animación de salida
+        };
+        
+        const stopPropagation = (e) => e.stopPropagation();
+
+        const PracticeTask = topic.practice.task;
+
+        React.useEffect(() => {
+            const handleKeyDown = (e) => {
+                if (e.key === 'Escape') handleClose();
+            };
+            window.addEventListener('keydown', handleKeyDown);
+            return () => window.removeEventListener('keydown', handleKeyDown);
+        }, []);
+
+        return (
+            <div onClick={handleClose} className={`fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 ${closing ? 'fade-out' : 'fade-in'}`}>
+                <div onClick={stopPropagation} className={`bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col ${closing ? 'scale-out' : 'scale-in'}`}>
+                    <header className="p-6 flex justify-between items-center border-b border-gray-200">
+                        <div className="flex items-center">
+                            <i data-lucide={topic.icon} className="w-7 h-7 mr-4 text-black"></i>
+                            <h3 className="text-2xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>{topic.title}</h3>
+                        </div>
+                        <button onClick={handleClose} className="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-black transition-colors">
+                            <i data-lucide="x" className="w-6 h-6"></i>
+                        </button>
+                    </header>
+                    <main className="p-6 overflow-y-auto">
+                        <div className="mb-6">
+                            <h4 className="font-semibold text-lg mb-2 text-gray-800">Análisis Profundo</h4>
+                            <p className="text-gray-600 leading-relaxed">{topic.practice.deepDive}</p>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold text-lg mb-2 text-gray-800">Ejercicio Práctico</h4>
+                            <p className="text-gray-600 leading-relaxed mb-4">{topic.practice.exercise}</p>
+                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <PracticeTask />
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<UxUiFundamentals />);
+  </script>
+</body>
+</html>
